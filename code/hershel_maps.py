@@ -12,6 +12,7 @@ It has various things related to Herschel data hard-coded.
 import numpy as np
 from scipy.signal import fftconvolve as convolve
 import scipy.optimize as op
+import pyfits as pyf
 
 # all the following from physics.nist.gov
 hh = 6.62606957e-34 # J s
@@ -57,9 +58,9 @@ def chi(data, pars, prior_info):
     """
     chi = np.array([])
     data.set_calibration(pars.get_calibration_pars())
-    for image, invvar, lam, kernel in data:
+    for image, invvar, sky, lam, kernel in data:
         thischi = (np.sqrt(invvar) *
-                   (image - convolve(pars.get_map(lam), kernel, mode="valid")))
+                   (image - sky - convolve(pars.get_map(lam), kernel, mode="valid")))
         chi = np.append(chi, thischi)
     return chi
 
@@ -69,34 +70,68 @@ class Data():
         """
         Brittle function to read Groves data sample and make the
         things we need for fitting.
-        """
-        pass
 
-    def __getitem__(self, k):
-        return self.images[k], self.invvars[k], self.lams[k], self.kernels[k]
+        # issues:
+        - Need to read the WCS too.
+        - Need, for each image, to construct the rectangular
+          nearest-neighbor interpolation indices to image 0.
+        - Can I just blow up the SPIRE images with interpolation?
+        """
+        self.images = []
+        self.lams = []
+        dataList = [
+            ('m31_brick15_PACS100.fits', 100.), # mum
+            ('m31_brick15_PACS160.fits', 160.),
+            ('m31_brick15_SPIRE250.fits', 250.),
+            ('m31_brick15_SPIRE350.fits', 350.),
+            ('m31_brick15_SPIRE500.fits', 500.),
+            ]
+        for n, (fn, lam) in enumerate(dataList):
+            f = pyf.open(dir + fn)
+            thisimage = np.array(f[0].data, dtype=float)
+            f.close()
+            self.images = self.images + [thisimage, ]
+            self.lams = self.lams + [lam * 1.e-6, ] # m
+            print thisimage.shape, len(self.images), len(self.lams)
+            print np.min(thisimage), np.median(thisimage), np.max(thisimage)
+        return None
+
+    def __getitem__(self, n):
+        """
+        Return what the optimizer needs from the data.
+        """
+        return self.images[n], self.invvars[n], self.skies[n], self.lams[n], self.kernels[n]
 
     def set_calibration(self, skyVariances, signalVariances, kernelVariances):
         """
         Because the calibration parameters relating to noise and PSF
         are fitting parameters, we need this function to update the
         current beliefs about calibration.
+
+        This code has hard-coded the fact that images[0] is the
+        highest resolution band.
         """
-        for k in len(self.lams):
-            self.invvar[k] = 1. / (skyVariances[k] + signalVariances[k] * self.images[k])
+        for n in len(self.lams):
+            self.invvar[n] = 1. / (skyVariances[n] + signalVariances[n] * self.images[n])
             hw = 9
-            thiskernel = np.exp(-0.5 * (np.arange(-hw, hw+1)[:, None] ** 2 +
-                                        np.arange(-hw, hw+1)[None, :] ** 2) /
-                                 self.kernelVariances[k])
-            thiskernel /= np.sum(thiskernel)
-            self.kernel[k] = thiskernel
+            if k == 0:
+                thiskernel = np.zeros((hw + hw + 1, hw + hw + 1))
+                thiskernel[hw, hw] = 1.
+            else:
+                thiskernel = np.exp(-0.5 * (np.arange(-hw, hw+1)[:, None] ** 2 +
+                                            np.arange(-hw, hw+1)[None, :] ** 2) /
+                                     self.kernelVariances[n])
+                thiskernel /= np.sum(thiskernel)
+            self.kernel[n] = thiskernel
         pass
 
 class Pars():
 
-    def __init__(self, lnRho, lnT, beta, skyVariances, signalVariances, kernelVariances):
+    def __init__(self, lnRho, lnT, beta, skyLevels, skyVariances, signalVariances, kernelVariances):
         self.lnRho = lnRho
         self.lnT = lnT
         self.beta = beta
+        self.skyLevels = skyLevels
         self.skyVariances = skyVariances
         self.signalVariances = signalVariances
         self.kernelVariances = kernelVariances
@@ -124,3 +159,7 @@ class Pars():
     def set_kernel_pars(self, pars):
         self.kernelVariances = pars
         return None
+
+if __name__ == '__main__':
+    data = Data('../data/')
+
