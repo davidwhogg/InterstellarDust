@@ -64,6 +64,15 @@ def chi(data, pars, prior_info):
         chi = np.append(chi, thischi)
     return chi
 
+def resampling_xy(shape, WCS, refWCS):
+    """
+    Get pixel positions in refWCS corresponding to the pixels in WCS.
+    """
+    x = np.arange(shape[0])[:, None]
+    y = np.arange(shape[1])[None, :]
+    refx, refy = refWCS.position2pixel(WCS.pixel2position(x, y))
+    return (refx, refy)
+
 class Data():
 
     def __init__(self, dir):
@@ -79,6 +88,7 @@ class Data():
         """
         self.images = []
         self.lams = []
+        self.WCSs = []
         dataList = [
             ('m31_brick15_PACS100.fits', 100.), # mum
             ('m31_brick15_PACS160.fits', 160.),
@@ -89,9 +99,13 @@ class Data():
         for n, (fn, lam) in enumerate(dataList):
             f = pyf.open(dir + fn)
             thisimage = np.array(f[0].data, dtype=float)
+            thisWCS = get_wcs(f) # replace this with something NOT WRONG
+            self.WCS = self.WCS + [thisWCS]
             f.close()
             self.images = self.images + [thisimage, ]
             self.lams = self.lams + [lam * 1.e-6, ] # m
+            self.WCS = self.WCS + [thisWCS]
+            self.xylist = resampling_xy(thisimage.shape, thisWCS, self.images[0].shape, self.WCS[0])
             print thisimage.shape, len(self.images), len(self.lams)
             print np.min(thisimage), np.median(thisimage), np.max(thisimage)
         return None
