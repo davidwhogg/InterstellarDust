@@ -1,7 +1,73 @@
 \documentclass[12pt, letterpaper]{article}
 
+\newcommand{\given}{\,|\,}
+
 \begin{document}
 
-Hello world.
+Imagine you have $M$ two-dimensional pixels $m$ on the celestial sphere.
+Within each pixel there are $N$ three three-dimensional boxels $mn$ in space along the line of sight
+  (such that there are $[M\,N]$ total boxels in space).
+Each boxel $mn$ has position $r_{mn}$ and we imagine it contains mean dust mass density $\rho_{mn}$.
+We don't know these densities;
+  they are parameters from our perspective.
+For notational convenience we will define two other kinds of density objects:
+One is a set of $M$ $N$-vectors $\rho_m$, one per sky pixel $m$,
+  each of which is the vector made up of the $N$ values $\rho_{mn}$ in sky pixel $m$.
+Another is the full $[M\,N]$-vector $\rho$,
+  which is the single complete vector of all boxel densities $\rho_{mn}$.
+
+Eddie and company have chosen some simple, vague prior on the $\rho_{mn}$
+  (something like flat in $\rho_{mn}$ or $\ln\rho_{mn}$, and something like independent from boxel to boxel).
+We will call this prior the ``interim prior'' in what follows.
+For what follows, all we need to know are the following two things:
+First, given the full $[M\,N]$-vector $\rho$,
+  we can evaluate the interim prior $p_0(\rho)$.
+Indeed, since Eddie and co.\ have sampled each sky pixel independently,
+  this full-space prior is a product of individual-pixel priors.
+Second, for each sky pixel $m$, we have a $K$-element sampling $\rho_{m}^{(k)}$,
+  each of which is a $N$-vector $\rho_m$ drawn from the posterior pdf
+  for the density along the line of sight in pixel $m$.
+
+Now, one beautiful thing we will use is that,
+  because each boxel $m$ has been independently sampled,
+  and has independent data,
+  and has an independent prior pdf over $\rho_m$,
+  any combinatoric combination of the samplings is itself a sampling.
+That is, the $K$ samplings per pixel $m$
+  leads to a total of $K^M$ valid samplings for the full density $[M\,N]$-vector $\rho$.
+Because the density is inferred from stars,
+  because stars constrain integrals of the density,
+  and because stars have noisy distance measurements,
+  we only have noisy, correlated, non-trivial beliefs about the boxels $\rho_{mn}$ within sky pixel $m$,
+  conditioned on this interim prior.
+
+Imagine we want to---after the sampling under the interim prior has completed---%
+  impose some more informative spatial prior pdf $p(\rho\given\alpha)$
+  on the big density parameter vector $\rho$.
+(Here $\alpha$ is a vector or blob of hyperparameters that control the informative spatial prior.)
+Can we do this without going back to the original sampling?
+Yes, we can, although it might hurt a bit.
+It involves importance sampling.
+The idea is as follows:
+If we obtain a posterior sample $\rho^{(j)}$ of $\rho$ drawn from the posterior
+  created with the interim prior $p_0(\rho)$,
+  we can compute a weight $w_j$ for this sample
+\begin{eqnarray}
+w_j & \leftarrow & \frac{p(\rho^{(j)}\given\alpha)}{p_0(\rho^{(j)})}
+\quad,
+\end{eqnarray}
+  where the weights are just the ratio of new prior to old prior (informative to interim).
+The \emph{weighted} set of samples is, in principle,
+  a sampling from the posterior pdf constructed under the informative prior.
+Problem solved!
+
+The problems are substantial:
+The vast majority of samples we have of $\rho$ will have extremely low weights in this calculation.
+There \emph{is} a vast number of samples of $\rho$ (combinatoric; see above).
+It is very hard to find the small fraction (vanishing fraction) of samples that are ``important''
+  under the importance sampling.
+
+The \textbf{dumbest possible option} is as follows:
+
 
 \end{document}
