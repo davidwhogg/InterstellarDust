@@ -66,8 +66,45 @@ The vast majority of samples we have of $\rho$ will have extremely low weights i
 There \emph{is} a vast number of samples of $\rho$ (combinatoric; see above).
 It is very hard to find the small fraction (vanishing fraction) of samples that are ``important''
   under the importance sampling.
+Another way to put it:
+Imagine you \emph{rejection sample} using the importance weights
+  (reject samples $j$ with an acceptance probability proportional to the weight $w_j$);
+  the dynamic range will be so huge you will in general end up with only one sample at the end!
+
+Of course another problem will be to specify $p(\rho\given\alpha)$.
+But there we are going to use a Gaussian Process,
+  to be discussed below,
+  so for now let's presume that is easy (or at least possible).
 
 The \textbf{dumbest possible option} is as follows:
+For each pixel $m$, choose a $k_m$, which is one of the samples $\rho_m^{(k)}$.
+The set of the $M$ $k_m$ samples $\rho_m^{(k)}$, taken together,
+  effectively comprise a sample $\rho^{(j)}$ for the whole density field.
+Compute the weight $w_j$ by taking the ratio of prior pdfs.
+This is unlikely to work well for the combinatoric reasons mentioned above.
 
+The \textbf{next dumbest thing} is a Gibbs-like variation on the above.
+You start at a (randomly chosen) starting point $\rho^{(j)}$ which is itself
+  chosen by choosing a set of $k_m$, one for every pixel $m$.
+You then go to each pixel $m$ in turn, and you choose a new $k_m$ for that pixel,
+  chosen with probability proportional to the relative posterior pdfs at the $k_m$ samples
+  (and fixing or conditioning on the current sample or state of all the other pixels).
+This would, in time, produce a rejection-sampled sampling of the new posterior pdf
+  (under the informative prior).
+We haven't proven that this would work, but I bet it would.
+It would still be likely to be \emph{incredibly slow}.
+
+The \textbf{next-to-next dumbest thing} would be to initialize that Gibbs run
+  with a high-posterior-probability sampling chosen from among the combinatorially large
+  number ($K^M$) of possible samples $\rho^{(j)}$.
+One greedy algorithm would be to go to each pixel $m$ in turn,
+  choosing the \emph{highest posterior pdf} sample $k_m$,
+  given the state of all other pixels.
+After a few passes through the data, this would converge
+  to some locally optimal state.
+It would be locally optimal because, by construction,
+  every change made would increase the posterior pdf of the state.
+This would also be super-fun, because it would embetterify the map in front of our eyes;
+  indeed, the locally MAP dust model produced this way would be neat to look at.
 
 \end{document}
