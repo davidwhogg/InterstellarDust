@@ -4,6 +4,12 @@
 
 \begin{document}
 
+\noindent
+to:  ES and HWR\\[1ex]
+from:  DWH and DFM\\[1ex]
+re: spatial priors\\[1ex]
+~
+
 Imagine you have $M$ two-dimensional pixels $m$ on the celestial sphere.
 Within each pixel there are $N$ three three-dimensional boxels $mn$ in space along the line of sight
   (such that there are $[M\,N]$ total boxels in space).
@@ -106,5 +112,32 @@ It would be locally optimal because, by construction,
   every change made would increase the posterior pdf of the state.
 This would also be super-fun, because it would embetterify the map in front of our eyes;
   indeed, the locally MAP dust model produced this way would be neat to look at.
+
+All of these ideas are stil \textbf{dumb},
+  because they involve repeated operations on $[M\,N]\times[M\,N]$ matrices,
+  which are huge-normous.
+That said, we can start with \emph{either}
+  a small patch of the two-space (sky) or three-space (volume),
+  chosen for testing and development;
+  indeed it makes sense to choose an interesting patch.
+Also, we can choose spatial priors (unlike Sale)
+  that have compact spatial support;
+  this leads to sparse matrices,
+  which make computations (properly done) faster.
+
+As for the spatial prior itself,
+  our advice is to use a Gaussian Process,
+  probably with a bell-shaped kernel (like a Gaussian shape or cosine or the like).
+We can choose the kernel and its parameters via cross-validation.
+
+On that note:
+Another advantage of choosing a small test region of sky or space
+  is that we can resample under different interim priors,
+  or with left-out stars.
+Our view is that you must have a sample of left-out stars
+  (a validation sample)
+  for setting or testing hyperparameter (and other) choices.
+
+\textsl{Etc!}
 
 \end{document}
