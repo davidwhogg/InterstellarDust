@@ -129,14 +129,21 @@ As for the spatial prior itself,
   our advice is to use a Gaussian Process,
   probably with a bell-shaped kernel (like a Gaussian shape or cosine or the like).
 We can choose the kernel and its parameters via cross-validation.
+We have very fast code for these kinds of problems.
+That's not a guarantee that anything will really be possible,
+  however it is a reason to start there in our development.
 
-On that note:
+On the cross-validation point:
 Another advantage of choosing a small test region of sky or space
   is that we can resample under different interim priors,
   or with left-out stars.
 Our view is that you must have a sample of left-out stars
   (a validation sample)
   for setting or testing hyperparameter (and other) choices.
+If ES has copious spare time,
+  he might think about resampling a small patch of the sky
+  (maybe 9 or 16 pixels in a square patch)
+  leaving out one star per patch.
 
 \textsl{Etc!}
 
