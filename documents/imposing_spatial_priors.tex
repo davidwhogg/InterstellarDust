@@ -1,14 +1,20 @@
 \documentclass[12pt, letterpaper]{article}
-
+\usepackage{url}
+\newcommand{\hurl}[1]{{\small\url{#1}}}
+\include{vc}
 \newcommand{\given}{\,|\,}
-
 \begin{document}
 
 \noindent
-to:  ES and HWR\\[1ex]
-from:  DWH and DFM\\[1ex]
-re: spatial priors\\[1ex]
-~
+\begin{tabular}{ll}
+to:    & ES and HWR\\[1ex]
+from:  & DWH and DFM\\[1ex]
+re:    & spatial priors\\[1ex]
+url:   & \hurl{http://github.com/davidwhogg/InterstellarDust/}\\[1ex]
+hash:  & \githash\\[1ex]
+date:  & \gitdate\\[1ex]
+\end{tabular}
+\bigskip
 
 Imagine you have $M$ two-dimensional pixels $m$ on the celestial sphere.
 Within each pixel there are $N$ three three-dimensional boxels $mn$ in space along the line of sight
@@ -32,7 +38,8 @@ Indeed, since Eddie and co.\ have sampled each sky pixel independently,
   this full-space prior is a product of individual-pixel priors.
 Second, for each sky pixel $m$, we have a $K$-element sampling $\rho_{m}^{(k)}$,
   each of which is a $N$-vector $\rho_m$ drawn from the posterior pdf
-  for the density along the line of sight in pixel $m$.
+  for the density along the line of sight in pixel $m$,
+  conditioned on the interim prior $p_0(\rho)$.
 
 Now, one beautiful thing we will use is that,
   because each boxel $m$ has been independently sampled,
@@ -75,7 +82,9 @@ It is very hard to find the small fraction (vanishing fraction) of samples that 
 Another way to put it:
 Imagine you \emph{rejection sample} using the importance weights
   (reject samples $j$ with an acceptance probability proportional to the weight $w_j$);
-  the dynamic range will be so huge you will in general end up with only one sample at the end!
+  the dynamic range will be so huge that---%
+  unless you make a huge number $J$ of samples $\rho^{(j)}$---%
+  you will in general end up with only one sample at the end!
 
 Of course another problem will be to specify $p(\rho\given\alpha)$.
 But there we are going to use a Gaussian Process,
@@ -113,11 +122,13 @@ It would be locally optimal because, by construction,
 This would also be super-fun, because it would embetterify the map in front of our eyes;
   indeed, the locally MAP dust model produced this way would be neat to look at.
 
-All of these ideas are stil \textbf{dumb},
+All of these ideas are still \textbf{dumb},
   because they involve repeated operations on $[M\,N]\times[M\,N]$ matrices,
   which are huge-normous.
 That said, we can start with \emph{either}
-  a small patch of the two-space (sky) or three-space (volume),
+  a small patch of the two-space (sky)
+  or a small patch of the three-space (volume),
+  or a two-dimensional slice (through the disk, perhaps?),
   chosen for testing and development;
   indeed it makes sense to choose an interesting patch.
 Also, we can choose spatial priors (unlike Sale)
@@ -130,8 +141,8 @@ As for the spatial prior itself,
   probably with a bell-shaped kernel (like a Gaussian shape or cosine or the like).
 We can choose the kernel and its parameters via cross-validation.
 We have very fast code for these kinds of problems.
-That's not a guarantee that anything will really be possible,
-  however it is a reason to start there in our development.
+That's not a guarantee that anything will really be possible or feasible.
+It is simply a reason to start at Gaussian Processes in our development.
 
 On the cross-validation point:
 Another advantage of choosing a small test region of sky or space
@@ -142,7 +153,8 @@ Our view is that you must have a sample of left-out stars
   for setting or testing hyperparameter (and other) choices.
 If ES has copious spare time,
   he might think about resampling a small patch of the sky
-  (maybe 9 or 16 pixels in a square patch)
+  (maybe 9 or 16 pixels in a square patch
+   or maybe a similar number of pixels in a slice through the disk),
   leaving out one star per patch.
 Even better to do that in an \emph{interesting} patch.
 
