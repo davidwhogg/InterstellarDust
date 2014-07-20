@@ -1,0 +1,62 @@
+% This document is part of the Dust project.
+% Copyright 2014 David W. Hogg (NYU)
+
+\documentclass[12pt, letterpaper]{article}
+
+% math, bitches
+\newcommand{\dd}{\mathrm{d}}
+
+\begin{document}
+
+Imagine that we are trying to infer the dust density $\rho(x)$, where
+$\rho$ is a continuous function of three-dimensional position $x$.
+We will ignore velocity space for now!
+Imagine that our prior belief is that the dust density $\rho(x)$ is a
+stochastic function that can be generated (approximately) by a
+Gaussian with some sensible mean function $\mu(x)$ and some variance
+tensor $V(\Delta x)$.
+The variance tensor acts on differences $\Delta x$ of position; more
+on this later.
+The fact that $\rho(x)$ is infinite dimensional is a detail; if it
+makes you upset, imagine that $x$ can only take on values on a very
+fine, finite grid.
+
+This prior belief---that the dust density is drawn from a
+Gaussian---is sensible, because it is easily manipulated and computed.
+That said, this prior belief is insane, because it allows for
+\emph{negative} dust.
+There is no way to remove the support of the Gaussian on the
+non-fully-positive part of the space (and this is the vast majority of
+the space).
+We could go to a Gaussian in the \emph{logarithm} of the density, but
+this will break the linearity we are going to use (below).
+
+Now think about the fact that we only ever observe the extinction
+$A(x)$ at some sparse set of three-dimensional positions $x$; we never
+directly observe the density $\rho(x)$.
+Following the Bailer-Jones notation, these are related to density by
+\begin{eqnarray}
+A(x) &=& \kappa\,\int_0^1 \rho(\eta\,x)\,|x|\,\dd\eta
+\quad,
+\end{eqnarray}
+where $\eta$ is a dimensionless integration variable.
+
+If it is our prior belief about $\rho(x)$ that it is drawn from a
+Gaussian with mean $\mu(x)$ and variance tensor $V(\Delta x)$ then I
+\emph{believe} that the consistent prior belief about $A(x)$ is that
+it is drawn from a Gaussian with mean $\mu'(x)$ and variance tensor
+$V'(\Delta x)$ with
+\begin{eqnarray}
+\mu'(x) &=& \kappa\,\int_0^1 \mu(\eta\,x)\,|x|\,\dd\eta
+\\
+V'(x_1 - x_2) &=& \kappa^2\,\int_0^1\int_0^1 V(\eta_1\,x_1 - \eta_2\,x_2)\,|x_1|\,|x_2|\,\dd\eta_1\,\dd\eta_2
+\quad .
+\end{eqnarray}
+That is, a Gaussian process in $\rho(x)$ implies a Gaussian process in
+$A(x)$.
+
+Now, how does inference of $A(x)$ and $\rho(x)$ proceed?
+
+[stuff]
+
+\end{document}
