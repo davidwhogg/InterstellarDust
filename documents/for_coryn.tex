@@ -15,11 +15,14 @@ $\rho$ is a continuous function of three-dimensional position $x$.
 We will ignore velocity space for now!
 Imagine that our prior belief is that the dust density $\rho(x)$ is a
 stochastic function that can be generated (approximately) by a
-Gaussian with some sensible mean function $\mu(x)$ and some variance
-tensor $V(\Delta x)$.
-The variance tensor acts on differences $\Delta x$ of position; more
-on this later.
-The fact that $\rho(x)$ is infinite dimensional is a detail; if it
+Gaussian with some sensible mean function $\mu_\rho(x)$ and some variance
+tensor $K_\rho(x, x')$.
+The variance tensor acts on pairs of three-space positions.
+It is a ``tensor'' because when it is applied to $N$ three-space
+positions $x_n$, it generates for each pair of positions $(n, n')$ the
+element $K_{nn'}$ of a $N\times N$ covariance matrix.
+The fact that $\rho(x)$ is infinite dimensional---that is, it is
+defined as a continuous function in three-space---is a detail; if it
 makes you upset, imagine that $x$ can only take on values on a very
 fine, finite grid.
 
@@ -36,22 +39,28 @@ this will break the linearity we are going to use (below).
 Now think about the fact that we only ever observe the extinction
 $A(x)$ at some sparse set of three-dimensional positions $x$; we never
 directly observe the density $\rho(x)$.
-Following the Bailer-Jones notation, these are related to density by
+Following the Bailer-Jones notation, extinctions and densities are
+related by
 \begin{eqnarray}
-A(x) &=& \kappa\,\int_0^1 \rho(\eta\,x)\,|x|\,\dd\eta
+A(x) &=& \kappa\,|x|\,\int_0^1 \rho(\eta\,x)\,\dd\eta
+\\
+\rho(x) &=& \frac{1}{\kappa\,|x|}\,\left.\frac{\dd}{\dd\eta}A(\eta\,x)\right|_{\eta=1}
 \quad,
 \end{eqnarray}
-where $\eta$ is a dimensionless integration variable.
+where $\kappa$ is a constant that relates dust density to extinction
+in the relevant band, $\eta$ is a dimensionless integration variable,
+and the $|x|$ factors keep the dimensions right.
+Recall that $x$ is a three-vector position.
 
 If it is our prior belief about $\rho(x)$ that it is drawn from a
-Gaussian with mean $\mu(x)$ and variance tensor $V(\Delta x)$ then I
+Gaussian with mean $\mu_\rho(x)$ and variance tensor $K_\rho(x, x')$ then I
 \emph{believe} that the consistent prior belief about $A(x)$ is that
-it is drawn from a Gaussian with mean $\mu'(x)$ and variance tensor
-$V'(\Delta x)$ with
+it is drawn from a Gaussian with mean $\mu_A(x)$ and variance tensor
+$K_A(\Delta x)$ with
 \begin{eqnarray}
-\mu'(x) &=& \kappa\,\int_0^1 \mu(\eta\,x)\,|x|\,\dd\eta
+\mu_A(x) &=& \kappa\,\int_0^1 \mu_\rho(\eta\,x)\,|x|\,\dd\eta
 \\
-V'(x_1 - x_2) &=& \kappa^2\,\int_0^1\int_0^1 V(\eta_1\,x_1 - \eta_2\,x_2)\,|x_1|\,|x_2|\,\dd\eta_1\,\dd\eta_2
+K_A(x_1, x_2) &=& \kappa^2\,\int_0^1\int_0^1 K_\rho(\eta_1\,x_1, \eta_2\,x_2)\,|x_1|\,|x_2|\,\dd\eta_1\,\dd\eta_2
 \quad .
 \end{eqnarray}
 That is, a Gaussian process in $\rho(x)$ implies a Gaussian process in
