@@ -102,15 +102,18 @@ likelihood---the probability of the data, marginalizing out the
 \begin{eqnarray}
 \ln p(A\given\mu,K) &=& -\frac{N}{2}\,\ln 2\pi - \frac{1}{2}\,\ln\det{V} - \frac{1}{2}\,\transpose{[A-\mu]}\,\inverse{V}\,[A-\mu]
 \\
-V &=& K + C
-\\
 \mu_n &=& \mu_A(x_n)
+\\
+V &=& K + C
 \\
 K_{nn'} &=& K_A(x_n, x_{n'})
 \\
 C_{nn'} &=& \sigma^2_n\,\delta_{nn'}
 \quad ,
 \end{eqnarray}
+where, implicitly, $A$ is the $N$-element column vector of the data $A_n$,
+$\mu$ is a $N$-element column vector,
+and $V$, $K$, and $C$ are $N\times N$ symmetric matrices.
 
 ...Notes about computation of this -- the double integrals and the linear algebra
 
