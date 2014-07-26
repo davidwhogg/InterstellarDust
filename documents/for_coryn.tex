@@ -3,12 +3,17 @@
 
 \documentclass[12pt, letterpaper]{article}
 
-% math, bitches
+% math
 \newcommand{\dd}{\mathrm{d}}
+\newcommand{\given}{\,|\,}
+\newcommand{\setof}[1]{\left\{{#1}\right\}}
+\newcommand{\inverse}[1]{{#1}^{-1}}
+\newcommand{\transpose}[1]{{#1}^{\mathsf{T}}}
+\renewcommand{\det}[1]{||{#1}||}
 
 \begin{document}
 
-\section{priors}
+\section{Prior pdfs}
 
 Imagine that we are trying to infer the dust density $\rho(x)$, where
 $\rho$ is a continuous function of three-dimensional position $x$.
@@ -56,24 +61,73 @@ If it is our prior belief about $\rho(x)$ that it is drawn from a
 Gaussian with mean $\mu_\rho(x)$ and variance tensor $K_\rho(x, x')$ then I
 \emph{believe} that the consistent prior belief about $A(x)$ is that
 it is drawn from a Gaussian with mean $\mu_A(x)$ and variance tensor
-$K_A(\Delta x)$ with
+$K_A(x, x')$ with
 \begin{eqnarray}
-\mu_A(x) &=& \kappa\,\int_0^1 \mu_\rho(\eta\,x)\,|x|\,\dd\eta
+\mu_A(x) &=& \kappa\,|x|\,\int_0^1 \mu_\rho(\eta\,x)\,\dd\eta
 \\
-K_A(x_1, x_2) &=& \kappa^2\,\int_0^1\int_0^1 K_\rho(\eta_1\,x_1, \eta_2\,x_2)\,|x_1|\,|x_2|\,\dd\eta_1\,\dd\eta_2
+K_A(x_1, x_2) &=& \kappa^2\,|x_1|\,|x_2|\,\int_0^1\int_0^1 K_\rho(\eta_1\,x_1, \eta_2\,x_2)\,\dd\eta_1\,\dd\eta_2
 \quad .
 \end{eqnarray}
 That is, a Gaussian process in $\rho(x)$ implies a Gaussian process in
 $A(x)$.
 
-\section{likelihoods}
+\section{Likelihood}
 
+Imagine we have $N$ observations (from here on: ``data'') $A_n$ at
+positions $x_n$ with independent noise contributions.
+Each noise contribution is drawn from a Gaussian with mean zero and
+variance $\sigma^2_n$.
+For now, let's presume that the positions $x_n$ are perfectly known
+(more on this later).
 Now, how does inference of $A(x)$ and $\rho(x)$ proceed?
 
-\section{posteriors}
+The prior on the dust field $\rho(x)$ and extinction field $A(x)$ are
+both Gaussian, and the noise is Gaussian, so the marginalized
+likelihood---the probability of the data, marginalizing out the
+(latent) dust density field or extinction field---is also a Gaussian:
+\begin{eqnarray}
+\ln p(A\given\mu,K) &=& -\frac{N}{2}\,\ln 2\pi - \frac{1}{2}\,\ln\det{V} - \frac{1}{2}\,\transpose{[A-\mu]}\,\inverse{V}\,[A-\mu]
+\\
+V &=& K + C
+\\
+\mu_n &=& \mu_A(x_n)
+\\
+K_{nn'} &=& K_A(x_n, x_{n'})
+\\
+C_{nn'} &=& \sigma^2_n\,\delta_{nn'}
+\quad ,
+\end{eqnarray}
 
-\section{kernel and hyper-parameters}
+...Notes about computation of this -- the double integrals and the linear algebra
 
-\section{open issues}
+\section{Posterior pdfs}
+
+...posterior for some new $A(x)$
+
+...posterior for some $\rho(x)$
+
+...Some notes on computational efficiency of incremental predictions
+
+\section{Mean, kernel, and hyper-parameters}
+
+...form for the mean function $\mu_\rho(x)$
+
+...form for the kernel function
+
+...Is there any form for the kernel function such that any of the integrals is analytic or simple?
+
+...how to infer the hyperparameters; duh!
+
+\section{Open issues}
+
+...Is there any chance that making the dust density on a grid would help?
+
+...Would discretization help, especially if $N$ is large?
+
+...What to do about distance errors?
+
+...What to do about \emph{improving} distance estimates?
+
+...The kernel functions might be smooth, but they won't be isotropic and homogeneous in either space, right?
 
 \end{document}
